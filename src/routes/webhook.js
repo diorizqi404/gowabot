@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const verifySignature = require('../utils/verifySignature')
 const handleMessage = require('../utils/messageHandler')
-const logger = require('../../logger')
+const logger = require('../logger')
 
 router.post('/', async (req, res) => {
   const signature = req.headers['x-hub-signature-256']
