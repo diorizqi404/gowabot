@@ -9,13 +9,8 @@ services:
       - gowa-whatsapp:/app/storages
     command:
       - rest
-      - --basic-auth=admin:admin,dev404:dev404
-      - --port=3000
-      - --debug=true
-      - --os=Chrome
-      - --account-validation=false
-      - --webhook=http://gowabot:5000/webhook
-      - --webhook-secret=bismillah
+    env_file:
+      - .env
     deploy:
       resources:
         limits:
@@ -28,12 +23,8 @@ services:
     restart: always
     ports:
       - "127.0.0.1:5000:5000"
-    environment:
-      - PORT=5000
-      - GOWA_WEBHOOK_SECRET=bismillah
-      - GOWA_API_URL=http://go-whatsapp:3000
-      - GOWA_USERNAME=admin
-      - GOWA_PASSWORD=admin
+    env_file:
+      - .env
     depends_on:
       - go-whatsapp
     deploy:

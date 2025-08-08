@@ -7,7 +7,7 @@ const logger = require('../logger')
 router.post('/', async (req, res) => {
   const signature = req.headers['x-hub-signature-256']
   const payload = req.body
-  const secret = process.env.GOWA_WEBHOOK_SECRET
+  const secret = process.env.WHATSAPP_WEBHOOK_SECRET
 
   if (!verifySignature(signature, payload, secret)) {
     return res.status(401).send('Unauthorized')
