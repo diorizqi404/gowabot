@@ -36,7 +36,7 @@ async function messageHandler(data) {
       }
     }
 
-    logger.log(`Message from ${senderName} (${senderPhone}): ${text}`);
+    logger.msg(`Message from ${senderName} (${senderPhone}): ${text}`);
 
     await routeMessage({
       text,

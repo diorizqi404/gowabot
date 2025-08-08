@@ -21,7 +21,7 @@ async function sendMessage(phone, message, duration = 0) {
       duration,
     })
 
-    logger.log(`Message sent: ${message} to ${phone}`);
+    logger.msg(`Message sent: ${message} to ${phone}`);
     return res.data
   } catch (e) {
     logger.error(`Failed to send message: ${e.message}`);
