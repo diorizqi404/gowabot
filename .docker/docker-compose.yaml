@@ -10,7 +10,7 @@ services:
     command:
       - rest
     env_file:
-      - .env
+      - ../.env
     deploy:
       resources:
         limits:
@@ -24,7 +24,7 @@ services:
     ports:
       - "127.0.0.1:5000:5000"
     env_file:
-      - .env
+      - ../.env
     depends_on:
       - go-whatsapp
     deploy:
