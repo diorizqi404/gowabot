@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const verifySignature = require('../utils/verifySignature')
-const handleMessage = require('../utils/messageHandler')
+const messageHandler = require('../handlers/messageHandler')
 const logger = require('../logger')
 
 router.post('/', async (req, res) => {
@@ -16,10 +16,10 @@ router.post('/', async (req, res) => {
   const data = JSON.parse(payload)
 
   try {
-    await handleMessage(data)
+    await messageHandler(data)
     res.status(200).send('OK')
   } catch (error) {
-    logger.error('Error handling message:', error.message)
+    logger.error(`Error handling message: ${error.message}`)
     res.status(500).send('Internal Server Error')
   }
 })

@@ -1,23 +1,26 @@
 const gowaClient = require("../services/gowaClient");
 const logger = require("../logger");
+const routeMessage = require("./commandHandler");
 
-async function handleMessage(data) {
-  const event = data.event;
-  const payload = data.payload;
+async function messageHandler(data) {
+  if (!data.message) {
+    return;
+  }
 
-  if (data.message) {
-    const text = data.message.text?.toLowerCase();
-    const senderPhone = data.sender_id
-    const senderName = data.pushname
-    const phone = data.from
+  const text = data.message.text?.toLowerCase();
+  const senderPhone = data.sender_id;
+  const senderName = data.pushname;
+  const phone = data.from;
 
+  if (text) {
     logger.log(`Message from ${senderName} (${senderPhone}): ${text}`);
 
-    if (text === "ping") {
-      await gowaClient.sendMessage(phone, "pong");
-    } else if (text === "halo") {
-      await gowaClient.sendMessage(phone, "Hai! Ada yang bisa saya bantu?");
-    }
+    await routeMessage({
+      text,
+      phone,
+      senderName,
+      gowaClient,
+    });
   }
 
   // Uncomment and modify the following lines if you want to handle more events
@@ -35,4 +38,4 @@ async function handleMessage(data) {
   // }
 }
 
-module.exports = handleMessage;
+module.exports = messageHandler;

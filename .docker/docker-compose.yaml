@@ -1,39 +1,46 @@
 services:
-  whatsapp:
+  go-whatsapp:
     image: aldinokemal2104/go-whatsapp-web-multidevice
-    container_name: whatsapp
+    container_name: go-whatsapp
     restart: always
     ports:
       - "3000:3000"
     volumes:
-      - whatsapp:/app/storages
+      - gowa-whatsapp:/app/storages
     command:
       - rest
-      - --basic-auth=admin:admin
+      - --basic-auth=admin:admin,dev404:dev404
       - --port=3000
       - --debug=true
       - --os=Chrome
       - --account-validation=false
-      - --webhook=http://node-webhook-bot:5000/webhook
+      - --webhook=http://gowabot:5000/webhook
       - --webhook-secret=bismillah
     deploy:
       resources:
         limits:
-          cpus: '1'
-          memory: 256M
+          cpus: '0.5'
+          memory: 128M
 
-  node-webhook:
+  gowabot:
     image: gowabot
-    container_name: node-webhook-bot
+    container_name: gowabot
     restart: always
     ports:
-      - "5000:5000"
+      - "127.0.0.1:5000:5000"
     environment:
       - PORT=5000
       - GOWA_WEBHOOK_SECRET=bismillah
-      - GOWA_API_URL=http://whatsapp:3000
+      - GOWA_API_URL=http://go-whatsapp:3000
       - GOWA_USERNAME=admin
       - GOWA_PASSWORD=admin
+    depends_on:
+      - go-whatsapp
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
 
 volumes:
-  whatsapp:
+  gowa-whatsapp:
