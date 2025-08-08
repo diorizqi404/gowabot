@@ -11,6 +11,10 @@ const client = axios.create({
 
 async function sendMessage(phone, message, duration = 0) {
   try {
+    await sendPresence(phone, 'start')
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    await sendPresence(phone, 'stop');
+
     const res = await client.post('/send/message', {
       phone,
       message,
@@ -24,4 +28,16 @@ async function sendMessage(phone, message, duration = 0) {
   }
 }
 
-module.exports = { sendMessage }
+async function sendPresence(phone, presence) {
+  try {
+    const res = await client.post('/send/chat-presence', {
+      phone,
+      action: presence
+    })
+    return res.message
+  } catch (e) {
+    logger.error(`Failed to send presence: ${e.message}`);
+  }
+}
+
+module.exports = { sendMessage, sendPresence }
