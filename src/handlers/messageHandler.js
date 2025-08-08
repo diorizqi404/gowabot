@@ -2,8 +2,20 @@ const gowaClient = require("../services/gowaClient");
 const logger = require("../logger");
 const routeMessage = require("./commandHandler");
 
+// Store processed message IDs to prevent duplicate processing
+const processedMessages = new Set();
+
 async function messageHandler(data) {
   if (!data.message) {
+    return;
+  }
+
+  // Get message ID for deduplication
+  const messageId = data.message.id;
+  
+  // Check if message was already processed
+  if (messageId && processedMessages.has(messageId)) {
+    logger.warn(`Duplicate message detected: ${messageId}`);
     return;
   }
 
@@ -13,6 +25,17 @@ async function messageHandler(data) {
   const phone = data.from;
 
   if (text) {
+    // Mark message as processed
+    if (messageId) {
+      processedMessages.add(messageId);
+
+      // Clean up old message IDs (keep only last 10)
+      if (processedMessages.size > 10) {
+        const firstItem = processedMessages.values().next().value;
+        processedMessages.delete(firstItem);
+      }
+    }
+
     logger.log(`Message from ${senderName} (${senderPhone}): ${text}`);
 
     await routeMessage({

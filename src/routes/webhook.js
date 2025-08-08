@@ -14,7 +14,9 @@ router.post('/', async (req, res) => {
   }
 
   const data = JSON.parse(payload)
-
+  
+  // move response status to avoid duplicate webhooks
+  
   try {
     await messageHandler(data)
     res.status(200).send('OK')

@@ -22,4 +22,40 @@ async function listContainers() {
   }
 }
 
-module.exports = { listContainers }
+async function getContainer(id) {
+  try {
+    const container = await docker.getContainer(id).inspect()
+    return JSON.stringify(container, null, 2);
+  } catch (err) {
+    return `Error getting container: ${err}`;
+  }
+}
+
+async function listImages() {
+  try {
+    const images = await docker.listImages()
+
+    if (images.length === 0) return "No images found.";
+
+    return images.map((img) => {
+      const sizeMB = (img.Size / (1024 * 1024)).toFixed(2);
+      return `${img.RepoTags[0]} - ${sizeMB} MB`;
+    }).join("\n");
+  } catch (err) {
+    return `Error listing images: ${err}`;
+  }
+}
+
+async function listVolumes() {
+  try {
+    const { Volumes } = await docker.listVolumes();
+
+    if (!Volumes || Volumes.length === 0) return "No volumes found.";
+
+    return Volumes.map((v) => `${v.Name} - ${v.Driver} - ${v.Mountpoint}`).join("\n");
+  } catch (err) {
+    return `Error listing volumes: ${err}`;
+  }
+}
+
+module.exports = { listContainers, listImages, getContainer, listVolumes };

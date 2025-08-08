@@ -15,8 +15,7 @@ async function routeMessage({text, phone, senderName, gowaClient}) {
     } else {
       return await gowaClient.sendMessage(phone, `Command not found: sv ${cmdKey}`)
     }
-  }
-  if (cmd === 'dc') {
+  } else if (cmd === 'dc') {
     const cmdKey = subcmd
     const handler = dcCommands[cmdKey]
 
