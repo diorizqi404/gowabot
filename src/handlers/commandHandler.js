@@ -15,14 +15,14 @@ async function routeMessage({text, phone, senderName, gowaClient}) {
     } else {
       return await gowaClient.sendMessage(phone, `Command not found: sv ${cmdKey}`)
     }
-  } else if (cmd === 'dc') {
+  } else if (cmd === 'docker') {
     const cmdKey = subcmd
     const handler = dcCommands[cmdKey]
 
     if (handler) {
       return handler({phone, gowaClient, args})
     } else {
-      return await gowaClient.sendMessage(phone, `Command not found: dc ${cmdKey}`)
+      return await gowaClient.sendMessage(phone, `Command not found: docker ${cmdKey}`)
     }
   }
 }
