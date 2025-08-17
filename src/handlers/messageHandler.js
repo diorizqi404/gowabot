@@ -12,7 +12,7 @@ async function messageHandler(data) {
 
   // Get message ID for deduplication
   const messageId = data.message.id;
-  
+
   // Check if message was already processed
   if (messageId && processedMessages.has(messageId)) {
     logger.warn(`Duplicate message detected: ${messageId}`);
@@ -22,7 +22,7 @@ async function messageHandler(data) {
   const text = data.message.text?.toLowerCase();
   const senderPhone = data.sender_id;
   const senderName = data.pushname;
-  const phone = data.from;
+  const phone = formatJid(data.from);
 
   if (text) {
     // Mark message as processed
@@ -59,6 +59,13 @@ async function messageHandler(data) {
   // } else if (data.action === "message_revoked") {
   //   console.log("Message revoked:", data.revoked_message_id);
   // }
+}
+
+function formatJid(phone) {
+  if (phone.includes("@")) {
+    return phone.split(":")[0]
+  }
+  return `${phone}@s.whatsapp.net`;
 }
 
 module.exports = messageHandler;
