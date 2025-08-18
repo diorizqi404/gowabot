@@ -21,16 +21,20 @@ module.exports = {
     const result = await dockerService.getContainerLogs(args);
     await gowaClient.sendMessage(phone, result);
   },
-  container: async ({ phone, gowaClient, args }) => {
+  inspect: async ({ phone, gowaClient, args }) => {
     const result = await dockerService.getContainer(args);
     await gowaClient.sendMessage(phone, result);
   },
-  img: async ({ phone, gowaClient }) => {
+  images: async ({ phone, gowaClient }) => {
     const result = await dockerService.listImages();
     await gowaClient.sendMessage(phone, result);
   },
-  volume: async ({ phone, gowaClient }) => {
+  volumes: async ({ phone, gowaClient }) => {
     const result = await dockerService.listVolumes();
+    await gowaClient.sendMessage(phone, result);
+  },
+  networks: async ({ phone, gowaClient }) => {
+    const result = await dockerService.listNetworks();
     await gowaClient.sendMessage(phone, result);
   },
 };

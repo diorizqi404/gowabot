@@ -13,18 +13,23 @@ if (process.env.DOCKER_HOST && process.env.DOCKER_HOST_PORT) {
 
 async function listContainers() {
   try {
-    const containers = await docker.listContainers();
+    const containers = await docker.listContainers({ all: true });
 
     if (containers.length === 0) return "No containers found.";
 
     return containers
-      .map(
-        (c) =>
-          `${c.Names[0].replace(/^\//, "")} - ${c.Image} - ${
-            c.Ports[0].PublicPort
-          }:${c.Ports[0].PrivatePort} (${c.State})`
-      )
-      .join("\n");
+      .map((c) => {
+        const name = c.Names[0].replace(/^\//, "");
+        const image = c.Image;
+        const ports =
+          Array.isArray(c.Ports) && c.Ports.length > 0
+            ? `${c.Ports[0].PublicPort}:${c.Ports[0].PrivatePort}`
+            : "No ports";
+        const state = c.State;
+        const status = c.Status;
+        return `Name: ${name} \nImage: ${image} \nPorts: ${ports} \nState: ${state} \nStatus: ${status}`;
+      })
+      .join("\n\n");
   } catch (err) {
     return `Error listing containers: ${err}`;
   }
@@ -72,7 +77,7 @@ async function stopContainer(name) {
 
 async function getContainerLogs(name) {
   try {
-    const container = docker.getContainer(name)
+    const container = docker.getContainer(name);
     if (!container) return `Container ${name} not found.`;
     const logs = await container.logs({
       stdout: true,
@@ -80,7 +85,7 @@ async function getContainerLogs(name) {
       follow: false,
       tail: 100,
     });
-    
+
     return `Logs for container ${name} retrieved successfully:\n\n${logs.toString()}`;
   } catch (err) {
     return `Error getting logs for container ${name}: ${err}`;
@@ -105,9 +110,9 @@ async function listImages() {
     return images
       .map((img) => {
         const sizeMB = (img.Size / (1024 * 1024)).toFixed(2);
-        return `${img.RepoTags[0]} - ${sizeMB} MB`;
+        return `${img.RepoTags[0]} [${sizeMB} MB]`;
       })
-      .join("\n");
+      .join("\n\n");
   } catch (err) {
     return `Error listing images: ${err}`;
   }
@@ -119,11 +124,21 @@ async function listVolumes() {
 
     if (!Volumes || Volumes.length === 0) return "No volumes found.";
 
-    return Volumes.map((v) => `${v.Name} - ${v.Driver} - ${v.Mountpoint}`).join(
-      "\n"
-    );
+    return Volumes.map((v) => `Name: ${v.Name} \nDriver: ${v.Driver} \nMountpoint: ${v.Mountpoint}`).join("\n\n");
   } catch (err) {
     return `Error listing volumes: ${err}`;
+  }
+}
+
+async function listNetworks() {
+  try {
+    const networks = await docker.listNetworks();
+
+    if (networks.length === 0) return "No networks found.";
+
+    return networks.map((n) => `Name: ${n.Name} \nID: ${n.Id} \nDriver: ${n.Driver}`).join("\n\n");
+  } catch (err) {
+    return `Error listing networks: ${err}`;
   }
 }
 
@@ -136,4 +151,5 @@ module.exports = {
   listImages,
   getContainer,
   listVolumes,
+  listNetworks,
 };
