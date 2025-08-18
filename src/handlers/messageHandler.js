@@ -24,7 +24,12 @@ async function messageHandler(data) {
   const senderName = data.pushname;
   const phone = formatJid(data.from);
 
-  if (text) {
+  const allowedNumbers = process.env.ALLOWED_NUMBER?.split(",").map(n => n.trim()) || [];
+  if (!allowedNumbers.includes(phone)) return;
+
+  if (phone.endsWith('@g.us')) return; // Don't reply to group messages
+
+  if (text && text.startsWith("!")) {
     // Mark message as processed
     if (messageId) {
       processedMessages.add(messageId);
